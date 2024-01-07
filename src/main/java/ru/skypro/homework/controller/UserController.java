@@ -1,48 +1,62 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
-import ru.skypro.homework.service.impl.*;
+import ru.skypro.homework.service.UserService;
 
+import javax.validation.Valid;
+import java.io.IOException;
+
+@Slf4j
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/users")
+@Tag(name = "Пользователи")
+@RequestMapping("users")
 public class UserController {
 
-//    private final UserServiceImpl userService;
+    private final UserService userService;
 
-//    public UserController(UserServiceImpl userService) {
-//        this.userService = userService;
-//    }
-
-    // Метод для обновления пароля
+    // Изменение пароля
     @PostMapping("/set_password")
-    public ResponseEntity<Void> setPassword(@RequestBody NewPasswordDto newPasswordDto) {
-//        userService.setPassword(newPasswordDto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> setPassword(@Valid @RequestBody NewPasswordDto pass) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (userService.updatePassword(auth, pass)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    // Метод для получения информации об авторизованном пользователе
+    // Получение информации об авторизованном пользователе
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getUser() {
-//        UserDto currentUserDto = userService.getCurrentUser();
-//        return ResponseEntity.ok(currentUserDto);
-        return ResponseEntity.ok(new UserDto());
+    public UserDto getUserInfo() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userService.getUser(auth);
     }
 
-    // Метод для обновления информации об авторизованном пользователе
+    // Обновление информации об авторизованном пользователе
     @PatchMapping("/me")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UpdateUserDto updateUserDto) {
-//        UserDto updatedUserDto = userService.updateUser(updateUserDto);
-//        return ResponseEntity.ok(updatedUserDto);
-        return ResponseEntity.ok(new UserDto());
+    public UpdateUserDto updateUser(@Valid @RequestBody UpdateUserDto updateUserDto) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userService.updateUser(auth, updateUserDto);
     }
 
-    // Метод для обновления аватара авторизованного пользователя
-    @PatchMapping("/me/image")
-    public ResponseEntity<Void> updateUserImage(@RequestPart("image") MultipartFile image) {
-//        userService.updateUserImage(image);
+    // Обновление аватара авторизованного пользователя
+    @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadAvatar(@RequestPart("image") MultipartFile image) throws IOException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        userService.updateAvatar(auth, image);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/avatars/{id}")
+    public ResponseEntity<byte[]> getAvatar(@PathVariable("id") Integer avatarId) {
+        return ResponseEntity.ok().body(userService.getAvatar(avatarId));
     }
 }
