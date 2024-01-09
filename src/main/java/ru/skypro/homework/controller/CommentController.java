@@ -1,57 +1,69 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.*;
-import ru.skypro.homework.service.impl.*;
+import ru.skypro.homework.service.CommentService;
+import ru.skypro.homework.service.Validation;
 
+@Slf4j
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/ads/{adId}/comments")
+@Tag(name = "Комментарии")
+@RequestMapping("ads")
 public class CommentController {
 
-//    private final CommentServiceImpl commentService;
+    private final CommentService commentService;
 
-//    public CommentController(CommentServiceImpl commentService) {
-//        this.commentService = commentService;
-//    }
+    private final Validation validation;
 
-    // Метод для получения комментариев к объявлению
-    @GetMapping
-    public ResponseEntity<CommentsDto> getComments(@PathVariable int adId) {
-//        CommentsDto commentsDto = commentService.getComments(adId);
-//        return ResponseEntity.ok(commentsDto);
-        return ResponseEntity.ok(new CommentsDto());
+    // Получение комментариев объявления
+    @GetMapping("/{adId}/comments")
+    public ResponseEntity<Object> getComments(@PathVariable Integer adId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CommentsDto commentsDto = commentService.getComments(auth, adId);
+        if (commentsDto.getCount() == 0){
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(commentsDto);
+        }
     }
 
-    // Метод для добавления комментария к объявлению
-    @PostMapping
-    public ResponseEntity<CommentDto> addComment(
-            @PathVariable int adId,
-            @RequestBody CreateOrUpdateCommentDto createOrUpdateCommentDto) {
-//        CommentDto newCommentDto = commentService.addComment(adId, createOrUpdateCommentDto);
-//        return ResponseEntity.status(201).body(newCommentDto);
-        return ResponseEntity.ok(new CommentDto());
+    // Добавление комментария к объявлению
+    @PostMapping("/{adId}/comments")
+    public ResponseEntity<CommentDto> addComment(@PathVariable Integer adId,
+                                                 @RequestBody CreateOrUpdateCommentDto comment) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CommentDto commentDto = commentService.addComment(auth, adId, comment);
+        return ResponseEntity.ok(commentDto);
     }
 
-    // Метод для удаления комментария
-    @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(
-            @PathVariable int adId,
-            @PathVariable int commentId) {
-//        commentService.deleteComment(adId, commentId);
-//        return ResponseEntity.ok().build();
-        return ResponseEntity.ok().build();
+    // Удаление комментария
+    @DeleteMapping("/{adId}/comments/{commentId}")
+    @PreAuthorize("@validationImpl.validateComment(authentication,#commentId)")
+    public ResponseEntity<String> delComment(@PathVariable Integer adId,
+                                             @PathVariable Integer commentId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (commentService.deleteComment(auth, adId, commentId)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    // Метод для обновления комментария
-    @PatchMapping("/{commentId}")
-    public ResponseEntity<CommentDto> updateComment(
-            @PathVariable int adId,
-            @PathVariable int commentId,
-            @RequestBody CreateOrUpdateCommentDto createOrUpdateCommentDto) {
-//        CommentDto updatedCommentDto = commentService.updateComment(adId, commentId, createOrUpdateCommentDto);
-//        return ResponseEntity.ok(updatedCommentDto);
-        return ResponseEntity.ok(new CommentDto());
+    // Изменение комментария
+    @PreAuthorize("@validationImpl.validateComment(authentication,#commentId)")
+    @PatchMapping("/{adId}/comments/{commentId}")
+    public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId,
+                                                    @PathVariable Integer commentId,
+                                                    @RequestBody CreateOrUpdateCommentDto comment) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(commentService.updateComment(auth, adId, commentId, comment));
     }
 
 }

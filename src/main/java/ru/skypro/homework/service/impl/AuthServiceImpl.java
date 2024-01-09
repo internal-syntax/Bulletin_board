@@ -1,46 +1,68 @@
 package ru.skypro.homework.service.impl;
 
-import org.springframework.security.core.userdetails.User;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.model.Avatar;
+import ru.skypro.homework.model.User;
+import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.service.AuthService;
 
+
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-
-    private final UserDetailsManager manager;
+    private final UserServiceImpl detailsService;
     private final PasswordEncoder encoder;
-
-    public AuthServiceImpl(UserDetailsManager manager,
-                           PasswordEncoder passwordEncoder) {
-        this.manager = manager;
-        this.encoder = passwordEncoder;
-    }
+    private final UserRepository userRepository;
 
     @Override
-    public boolean login(String userName, String password) {
-        if (!manager.userExists(userName)) {
+    public boolean login(String userName,String password) {
+        log.debug("--- service started login");
+        if (!userRepository.existsByLoginIgnoreCase(userName)) {
             return false;
         }
-        UserDetails userDetails = manager.loadUserByUsername(userName);
-        return encoder.matches(password, userDetails.getPassword());
+        UserDetails userDetails = detailsService.loadUserByUsername(userName);
+        if (encoder.matches(password, userDetails.getPassword())) {
+            log.debug("--- user login: " + userName);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean register(Register register) {
-        if (manager.userExists(register.getUsername())) {
+        log.debug("--- service started register");
+        if (userRepository.existsByLoginIgnoreCase(register.getUsername())) {
             return false;
         }
-        manager.createUser(
-                User.builder()
-                        .passwordEncoder(this.encoder::encode)
-                        .password(register.getPassword())
-                        .username(register.getUsername())
-                        .roles(register.getRole().name())
-                        .build());
-        return true;
+
+        User newUser = createUser(register);
+
+        try {
+            userRepository.save(newUser);
+            log.debug("--- user registered: " + register.getUsername());
+            return true;
+        }catch (Exception e){
+            log.error("error during user registration: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private User createUser(Register register) {
+        User newUser = new User();
+        newUser.setLogin(register.getUsername());
+        newUser.setPassword(encoder.encode(register.getPassword()));
+        newUser.setFirstName(register.getFirstName());
+        newUser.setLastName(register.getLastName());
+        newUser.setPhone(register.getPhone());
+        newUser.setRole(register.getRole());
+        newUser.setAvatar(new Avatar());
+        return newUser;
     }
 }
