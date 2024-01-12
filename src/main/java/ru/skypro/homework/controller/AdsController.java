@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
+@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Объявления")
@@ -32,10 +33,10 @@ public class AdsController {
 
     // Добавление объявления
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AdDto> addAd(@RequestPart("properties") CreateOrUpdateAdDto createOrUpdateAdDto,
+    public ResponseEntity<AdDto> addAd(@RequestPart("properties") CreateOrUpdateAdDto crOrUpdAdDto,
                                        @RequestPart("image") MultipartFile image) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        AdDto adDto = adService.addAd(auth, createOrUpdateAdDto, image);
+        AdDto adDto = adService.addAd(auth, crOrUpdAdDto, image);
         return ResponseEntity.status(HttpStatus.CREATED).body(adDto);
     }
 
@@ -62,9 +63,9 @@ public class AdsController {
     @PreAuthorize("@validationImpl.validateAd(authentication,#id)")
     @PatchMapping(value = "/{id}")
     public AdDto updateAd(@PathVariable Integer id,
-                          @RequestBody CreateOrUpdateAdDto createOrUpdateAdDto) throws Exception {
+                          @RequestBody CreateOrUpdateAdDto crOrUpdAdDto) throws Exception {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        AdDto adDto = adService.updateAd(auth, id, createOrUpdateAdDto);
+        AdDto adDto = adService.updateAd(auth, id, crOrUpdAdDto);
         return adDto;
     }
 

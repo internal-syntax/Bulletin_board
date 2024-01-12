@@ -2,35 +2,65 @@ package ru.skypro.homework.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.skypro.homework.dto.CommentDto;
 import ru.skypro.homework.dto.CommentsDto;
-import ru.skypro.homework.dto.CreateOrUpdateAdDto;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDto;
 import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.model.Comment;
+import ru.skypro.homework.model.User;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Mapper
-public interface CommentMapper {
+@Component
+public class CommentMapper {
 
-    @Mapping(source = "author.id", target = "user")
-    @Mapping(target = "authorImage", expression = "java(image(comment))")
-    @Mapping(source = "author.firstName", target = "authorFirstName")
-    @Mapping(source = "id", target = "pk")
-    CommentDto convertToCommentDto(Comment comment);
+    public CommentDto outDto(Comment comment) {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setAuthor(comment.getUser().getId());
+        commentDto.setAuthorImage(String.format("/users/avatars/%d",comment.getUser().getAvatar().getId()));
+        commentDto.setAuthorFirstName(comment.getUser().getFirstName());
+        commentDto.setCreatedAt(comment.getDateTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        commentDto.setPk(comment.getId());
+        commentDto.setText(comment.getText());
+        return commentDto;
+    }
+
+    public CommentsDto outDtos(List<Comment> commentsList) {
+        CommentsDto commentsDto = new CommentsDto();
+        List<CommentDto> commentDtoList = commentsList.stream()
+                .map(this::outDto)
+                .collect(Collectors.toList());
+        commentsDto.setResults(commentDtoList);
+        commentsDto.setCount(commentDtoList.size());
+        return commentsDto;
+    }
+
+    public Comment inDto(User user, Ad ad, CreateOrUpdateCommentDto crOrUpdComDto) {
+        Comment comment = new Comment();
+        comment.setDateTime(LocalDateTime.now());
+        comment.setText(crOrUpdComDto.getText());
+        comment.setUser(user);
+        comment.setAd(ad);
+        return comment;
+    }
+
+/*    @Mapping(target = "pk", source = "id")
+    @Mapping(target = "author", source = "user")
+    @Mapping(target = "author.firstName", source = "user.firstName")
+    @Mapping(target = "authorImage", expression = "java(userMapper.getImageUri(source.getUser()))")
+    CommentDto convertToCommentDto(Comment source);
 
     default String image(Comment comment) {
         int id = comment.getUser().getId();
         return "/users/" + id + "/image";
     }
 
-    Comment convertToComment(CreateOrUpdateCommentDto createOrUpdateCommentDto);
+    Comment convertToComment(CreateOrUpdateCommentDto source);
 
     default CommentsDto toCommentsDto(List<Comment> comments) {
         return CommentsDto.builder()
@@ -39,13 +69,5 @@ public interface CommentMapper {
                 .build();
     }
 
-    @Mapping(source = "author.id", target = "author")
-    @Mapping(target = "authorImage", expression = "java(image(comment))")
-    @Mapping(source = "author.firstName", target = "authorFirstName")
-    @Mapping(source = "id", target = "pk")
-    Comment updateComment(CreateOrUpdateCommentDto createOrUpdateCommentDto, @MappingTarget Comment comment, Ad ad);
-
-    List<CommentDto> convertToCommentDtoList(Collection<Comment> commentCollection);
-
-    List<CommentDto> toCommentsListDto(Collection<Comment> commentCollection);
+    List<CommentDto> convertToCommentDtoList(Collection<Comment> commentCollection);*/
 }

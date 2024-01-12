@@ -7,8 +7,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString
 @Entity
 @Table(name = "AdImage")
 public class AdImage {
@@ -17,6 +15,6 @@ public class AdImage {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "bytea")
+    @Column(columnDefinition = "bytea")
     private byte[] data;
 }
