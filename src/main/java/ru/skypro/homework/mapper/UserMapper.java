@@ -35,19 +35,4 @@ public class UserMapper {
         String formattedPhoneNumber = phoneNumber.replaceAll("\\D", "");
         return "+" + formattedPhoneNumber;
     }
-
-/*    @Mapping(target = "image", expression = "java(getImageUri(source))")
-    @Mapping(target = "email", source = "login")
-    UserDto convertToDto(User source);
-
-
-    User convertToEntity(UserDto source);
-
-    default String getImageUri(Ad source) {
-        if (source.getAdImage() != null) {
-            return String.format("/ads/%d/image", source.getId());
-        } else {
-            return null;
-        }
-    }*/
 }

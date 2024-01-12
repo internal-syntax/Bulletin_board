@@ -26,7 +26,8 @@ public class Ad {
     @Column(name = "description")
     private String description;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = true)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "image_id")
     private AdImage adImage;
 
     @ManyToOne

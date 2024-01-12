@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="5-base" author="test">
+
+        <preConditions>
+            <not>
+                <tableExists tableName="avatars"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="avatars">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="data" type="bytea">
+                <constraints nullable="true"/>
+            </column>
+
+
+        </createTable>
+
+    </changeSet>
+</databaseChangeLog>

@@ -48,26 +48,4 @@ public class CommentMapper {
         comment.setAd(ad);
         return comment;
     }
-
-/*    @Mapping(target = "pk", source = "id")
-    @Mapping(target = "author", source = "user")
-    @Mapping(target = "author.firstName", source = "user.firstName")
-    @Mapping(target = "authorImage", expression = "java(userMapper.getImageUri(source.getUser()))")
-    CommentDto convertToCommentDto(Comment source);
-
-    default String image(Comment comment) {
-        int id = comment.getUser().getId();
-        return "/users/" + id + "/image";
-    }
-
-    Comment convertToComment(CreateOrUpdateCommentDto source);
-
-    default CommentsDto toCommentsDto(List<Comment> comments) {
-        return CommentsDto.builder()
-                .count(comments.size())
-                .results(convertToCommentDtoList(comments))
-                .build();
-    }
-
-    List<CommentDto> convertToCommentDtoList(Collection<Comment> commentCollection);*/
 }
