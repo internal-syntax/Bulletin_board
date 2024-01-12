@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 
 @Slf4j
+@CrossOrigin(value = "http://localhost:3000")
 @RequiredArgsConstructor
 @RestController
 @Tag(name = "Пользователи")

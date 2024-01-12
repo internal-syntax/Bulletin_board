@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public interface UserService {
     UserDto getUser(Authentication auth);
-    UpdateUserDto updateUser(Authentication auth, UpdateUserDto user);
+    UpdateUserDto updateUser(Authentication auth, UpdateUserDto updateUserDto);
     boolean updatePassword(Authentication auth, NewPasswordDto password);
     boolean updateAvatar(Authentication auth, MultipartFile image) throws IOException;
     byte[] getAvatar(int idUser);

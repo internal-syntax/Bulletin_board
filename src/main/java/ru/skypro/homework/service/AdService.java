@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.util.*;
 
 public interface AdService {
-    AdDto addAd(Authentication auth, CreateOrUpdateAdDto createOrUpdateAdDto, MultipartFile image) throws IOException;
+    AdDto addAd(Authentication auth, CreateOrUpdateAdDto crOrUpdAdDto, MultipartFile image) throws IOException;
     ExtendedAdDto getAd(int adId);
-    AdDto updateAd(Authentication auth, int idAd, CreateOrUpdateAdDto createOrUpdateAdDto) throws Exception;
+    AdDto updateAd(Authentication auth, int idAd, CreateOrUpdateAdDto crOrUpdAdDto) throws Exception;
     boolean deleteAd(Authentication auth, int idAd);
     AdsDto getAllAds();
     AdsDto getAllAdsAuth(Authentication auth);

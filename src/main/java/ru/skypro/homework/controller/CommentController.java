@@ -13,6 +13,7 @@ import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.service.Validation;
 
 @Slf4j
+@CrossOrigin(value = "http://localhost:3000")
 @RequiredArgsConstructor
 @RestController
 @Tag(name = "Комментарии")
@@ -25,22 +26,18 @@ public class CommentController {
 
     // Получение комментариев объявления
     @GetMapping("/{adId}/comments")
-    public ResponseEntity<Object> getComments(@PathVariable Integer adId) {
+    public CommentsDto getComments(@PathVariable Integer adId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CommentsDto commentsDto = commentService.getComments(auth, adId);
-        if (commentsDto.getCount() == 0){
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(commentsDto);
-        }
+        return commentsDto;
     }
 
     // Добавление комментария к объявлению
     @PostMapping("/{adId}/comments")
     public ResponseEntity<CommentDto> addComment(@PathVariable Integer adId,
-                                                 @RequestBody CreateOrUpdateCommentDto comment) {
+                                                 @RequestBody CreateOrUpdateCommentDto crOrUpdComDto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CommentDto commentDto = commentService.addComment(auth, adId, comment);
+        CommentDto commentDto = commentService.addComment(auth, adId, crOrUpdComDto);
         return ResponseEntity.ok(commentDto);
     }
 
@@ -61,9 +58,9 @@ public class CommentController {
     @PatchMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId,
                                                     @PathVariable Integer commentId,
-                                                    @RequestBody CreateOrUpdateCommentDto comment) {
+                                                    @RequestBody CreateOrUpdateCommentDto crOrUpdComDto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok(commentService.updateComment(auth, adId, commentId, comment));
+        return ResponseEntity.ok(commentService.updateComment(auth, adId, commentId, crOrUpdComDto));
     }
 
 }

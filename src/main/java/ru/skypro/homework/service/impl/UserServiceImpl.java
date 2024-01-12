@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.debug("--- выполнение метода сервиса getUser");
         ru.skypro.homework.model.User user = userRepository.findUserByLoginIgnoreCase(auth.getName())
                 .orElseThrow(() -> new UserNotFoundException("Пользователь не найден " + auth.getName()));
-        return userMapper.convertToDto(user);
+        return userMapper.outDto(user);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.debug("--- выполнение метода сервиса updateUser");
         ru.skypro.homework.model.User user = userRepository.findUserByLoginIgnoreCase(auth.getName())
                 .orElseThrow(() -> new UserNotFoundException("Пользователь не найден " + auth.getName()));
-        ru.skypro.homework.model.User updatedUser = userMapper.convertToEntity(updateUserDto);
+        ru.skypro.homework.model.User updatedUser = userMapper.inDto(updateUserDto, user);
         userRepository.save(updatedUser);
         return updateUserDto;
     }
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public byte[] getAvatar(int avatarId) {
         log.info("--- выполнение метода сервиса getAvatar");
         Avatar avatar = avatarRepository.findById(avatarId)
-                .orElseThrow(AvatarNotFoundException::new);
+                .orElseThrow(() -> new AvatarNotFoundException());
         return avatar.getData();
     }
 }

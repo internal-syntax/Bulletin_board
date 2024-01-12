@@ -12,8 +12,6 @@ import java.util.Objects;
 @Builder
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString
 @Entity
 @Table(name = "users")
 public class User {

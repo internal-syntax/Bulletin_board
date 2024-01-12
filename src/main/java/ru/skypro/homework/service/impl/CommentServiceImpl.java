@@ -34,25 +34,25 @@ public class CommentServiceImpl implements CommentService {
     private final Validation validation;
 
     @Override
-    public CommentDto addComment(Authentication auth, int adId, CreateOrUpdateCommentDto createOrUpdateCommentDto) {
+    public CommentDto addComment(Authentication auth, int adId, CreateOrUpdateCommentDto crOrUpdComDto) {
         log.debug("--- выполнение метода сервиса addComment");
         User user = userRepository.findUserByLoginIgnoreCase(auth.getName())
                 .orElseThrow(()->new UserNotFoundException("Пользователь не найден: " + auth.getName()));
         Ad ad = adRepository.findById(adId)
                 .orElseThrow(()->new EntityNotFoundException("Объявление не найдено по идентификатору: " + adId));
-        Comment newComment = commentMapper.convertToComment(createOrUpdateCommentDto);
-        return commentMapper.convertToCommentDto(commentRepository.save(newComment));
+        Comment newComment = commentMapper.inDto(user, ad, crOrUpdComDto);
+        return commentMapper.outDto(commentRepository.save(newComment));
     }
 
     @Override
     public CommentsDto getComments(Authentication auth, int adId) {
         log.info("--- выполнение метода сервиса getComments");
         List<Comment> commentList = commentRepository.findCommentsByAd_Id(adId);
-        return commentMapper.toCommentsDto(commentList);
+        return commentMapper.outDtos(commentList);
     }
 
     @Override
-    public CommentDto updateComment(Authentication auth, int adId, int commentId, CreateOrUpdateCommentDto createOrUpdateCommentDto) {
+    public CommentDto updateComment(Authentication auth, int adId, int commentId, CreateOrUpdateCommentDto crOrUpdComDto) {
         log.debug("--- выполнение метода сервиса updateComment");
         Ad ad = adRepository.findById(adId)
                 .orElseThrow(()-> new EntityNotFoundException("Объявление не найдено по идентификатору: " + adId));
@@ -62,9 +62,9 @@ public class CommentServiceImpl implements CommentService {
 
         if(validation.validateComment(auth,commentId))
         {
-            Comment newComment = commentMapper.convertToComment(createOrUpdateCommentDto);
+            Comment newComment = commentMapper.inDto(currentComment.getUser(),ad,crOrUpdComDto);
             newComment.setId(currentComment.getId());
-            return commentMapper.convertToCommentDto(commentRepository.save(newComment));
+            return commentMapper.outDto(commentRepository.save(newComment));
         } else {
             throw new UnauthorizedUserException("Пользователь не авторизован для изменения комментария");
         }

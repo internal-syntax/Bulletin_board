@@ -9,10 +9,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"user", "comments"})
-@ToString(exclude = {"user", "comments"})
-@Entity
-@Table(name = "ads")
+@Entity (name = "ads")
 public class Ad {
 
     @Id
@@ -29,8 +26,7 @@ public class Ad {
     @Column(name = "description")
     private String description;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "adImage_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
     private AdImage adImage;
 
     @ManyToOne
@@ -39,7 +35,4 @@ public class Ad {
 
     @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
-
-//    @OneToOne(cascade = CascadeType.ALL, optional = true)
-//    private AdImage adImage;
 }
