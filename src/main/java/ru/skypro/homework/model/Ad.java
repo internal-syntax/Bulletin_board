@@ -5,6 +5,9 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Сущность представляющая объявление.
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

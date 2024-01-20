@@ -1,5 +1,9 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +28,27 @@ public class CommentController {
 
     private final Validation validation;
 
-    // Получение комментариев объявления
+    @Operation(
+            summary = "Получить все комментарии",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Все комментарии получены",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = CommentsDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Комментарии не получены",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = CommentsDto.class)
+                            )
+                    )
+            }
+    )
     @GetMapping("/{adId}/comments")
     public CommentsDto getComments(@PathVariable Integer adId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -32,7 +56,27 @@ public class CommentController {
         return commentsDto;
     }
 
-    // Добавление комментария к объявлению
+    @Operation(
+            summary = "Добавить комментарий",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Комментарий успешно добавлен",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = CommentDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Ошибка добавления комментария",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = CommentDto.class)
+                            )
+                    )
+            }
+    )
     @PostMapping("/{adId}/comments")
     public ResponseEntity<CommentDto> addComment(@PathVariable Integer adId,
                                                  @RequestBody CreateOrUpdateCommentDto crOrUpdComDto) {
@@ -41,7 +85,27 @@ public class CommentController {
         return ResponseEntity.ok(commentDto);
     }
 
-    // Удаление комментария
+    @Operation(
+            summary = "Удаление комментария",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Комментарий успешно удален",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = CommentDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Ошибка удаления комментария",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = CommentDto.class)
+                            )
+                    )
+            }
+    )
     @DeleteMapping("/{adId}/comments/{commentId}")
     @PreAuthorize("@validationImpl.validateComment(authentication,#commentId)")
     public ResponseEntity<String> delComment(@PathVariable Integer adId,
@@ -53,7 +117,27 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    // Изменение комментария
+    @Operation(
+            summary = "Изменение комментария",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Комментарий успешно отредактирован",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = CommentDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Ошибка редактирования комментария",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = CommentDto.class)
+                            )
+                    )
+            }
+    )
     @PreAuthorize("@validationImpl.validateComment(authentication,#commentId)")
     @PatchMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId,

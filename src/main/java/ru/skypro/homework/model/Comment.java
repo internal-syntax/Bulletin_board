@@ -6,6 +6,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Сущность представляющая комментарий для объявления.
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
