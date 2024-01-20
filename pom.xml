@@ -12,14 +12,14 @@
   </parent>
 
   <groupId>ru.skypro</groupId>
-  <artifactId>ads</artifactId>
-  <version>0.0.1-SNAPSHOT</version
-  >
+  <artifactId>adsDto</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
   <name>Ads application</name>
-  <description>Application for managing ads</description>
+  <description>Application for managing adsDto</description>
 
   <properties>
     <java.version>11</java.version>
+    <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
   </properties>
 
   <dependencies>
@@ -30,12 +30,11 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -53,6 +52,20 @@
       <optional>true</optional>
     </dependency>
     <dependency>
+      <groupId>org.liquibase</groupId>
+      <artifactId>liquibase-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-ui</artifactId>
+      <version>1.6.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
@@ -61,6 +74,11 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${org.mapstruct.version}</version>
     </dependency>
   </dependencies>
 
@@ -76,6 +94,38 @@
               <artifactId>lombok</artifactId>
             </exclude>
           </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <source>${java.version}</source> <!-- depending on your project -->
+          <target>${java.version}</target> <!-- depending on your project -->
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok-mapstruct-building</artifactId>
+              <version>0.2.0</version>
+            </path>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${org.mapstruct.version}</version>
+            </path>
+            <!-- other annotation processors -->
+          </annotationProcessorPaths>
+          <compilerArgs>
+            <compilerArg>
+              -Amapstruct.defaultComponentModel=spring
+            </compilerArg>
+          </compilerArgs>
         </configuration>
       </plugin>
     </plugins>

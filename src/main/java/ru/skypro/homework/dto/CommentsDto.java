@@ -5,13 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class Login {
-
-    private String username;
-    private String password;
+public class CommentsDto {
+    private int count;
+    private List<CommentDto> results;
 }
