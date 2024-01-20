@@ -16,11 +16,14 @@ import ru.skypro.homework.repositories.AdImageRepository;
 import ru.skypro.homework.repositories.AdRepository;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.service.AdService;
+import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.Validation;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static liquibase.repackaged.net.sf.jsqlparser.util.validation.metadata.NamedObject.user;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,27 +35,24 @@ public class AdServiceImpl implements AdService {
     private final UserRepository userRepository;
     private final AdImageRepository adImageRepository;
     private final Validation validation;
+    private final ImageService imageService;
 
     @Override
     public AdDto addAd(Authentication auth, CreateOrUpdateAdDto crOrUpdAdDto, MultipartFile image) throws IOException {
         log.debug("--- выполнение метода сервиса addAd");
         User user = userRepository.findUserByLoginIgnoreCase(auth.getName())
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с именем: " + auth.getName() + " не найден"));
+        String imagePath = imageService.createImagePath(image);
+        imageService.upload(imagePath, image);
         Ad ad = adMapper.inDtoUpdate(crOrUpdAdDto);
         AdImage adImage = new AdImage();
-        adImage.setData(image.getBytes());
+        adImage.setImagePath(imagePath);
 
-        adImage = adImageRepository.save(adImage);
+        imageService.save(adImage);
         ad.setAdImage(adImage);
-
         ad.setUser(user);
         adRepository.save(ad);
         return adMapper.outDtoAd(ad);
-
-/*        ad.setAdImage(adImage);
-        ad.setUser(user);
-        adRepository.save(ad);
-        return adMapper.outDtoAd(ad);*/
     }
 
     @Override
@@ -117,17 +117,20 @@ public class AdServiceImpl implements AdService {
 
         Ad ad = adRepository.findById(adId).orElseThrow(AdNotFoundException::new);
         AdImage adImage = ad.getAdImage();
-        adImage.setData(image.getBytes());
+        /*        adImage.setData(image.getBytes());*/
         ad.setAdImage(adImage);
         adRepository.save(ad);
-        return ad.getAdImage().getData();
+        return imageService.download(ad.getAdImage().getImagePath());
+        /*        return ad.getAdImage().getData();*/
     }
 
     @Override
     public byte[] getImageAd(int adId) throws EntityNotFoundException {
         log.debug("--- выполнение метода сервиса getImageAd");
-        return adRepository.findById(adId)
+        AdImage adImage = adRepository.findById(adId)
                 .orElseThrow(() -> new AdNotFoundException("Объявление не найдено по идентификатору: " + adId))
-                .getAdImage().getData();
+                .getAdImage();
+
+        return imageService.download(adImage.getImagePath());
     }
 }

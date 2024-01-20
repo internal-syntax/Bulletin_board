@@ -64,30 +64,4 @@ public class AdMapper {
         ad.setDescription(crOrUpdAdDto.getDescription());
         return ad;
     }
-
-/*    @Mapping(target = "pk", source = "id")
-    @Mapping(target = "author", source = "user.id")
-    @Mapping(target = "image", expression = "java(getImageUri(source))")
-    AdDto convertAdToAdDto(Ad source);
-
-    @Mapping(target = "pk", source = "id")
-    @Mapping(target = "authorFirstName", source = "user.firstName")
-    @Mapping(target = "authorLastName", source = "user.lastName")
-    @Mapping(target = "phone", source = "user.phone")
-    @Mapping(target = "adImage", expression = "java(getImageUri(source))")
-    ExtendedAdDto adToFullAdDto(Ad source);
-
-    AdDto convertAdToAdDto(CreateOrUpdateAdDto createOrUpdateAdDto);
-
-    Ad convertAdDtoToAd(CreateOrUpdateAdDto source);
-
-    void updateAds(CreateOrUpdateAdDto createOrUpdateAdDto, @MappingTarget Ad ad);
-
-    default String getImageUri(Ad source) {
-        if (source.getAdImage() != null) {
-            return String.format("/ads/%d/image", source.getId());
-        } else {
-            return null;
-        }
-    }*/
 }

@@ -19,7 +19,7 @@ public class Comment {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "dateTime")
+    @Column(name = "date_time")
     private LocalDateTime dateTime;
 
     @Column(name = "text")

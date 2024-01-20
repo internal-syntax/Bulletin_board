@@ -3,18 +3,19 @@ package ru.skypro.homework.model;
 import lombok.*;
 
 import javax.persistence.*;
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+
 @Entity
-@Table(name = "AdImage")
+@Table(name = "images")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class AdImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Integer id;
 
-    @Column(columnDefinition = "bytea")
-    private byte[] data;
+    @Column(name = "image_path")
+    private String imagePath;
 }

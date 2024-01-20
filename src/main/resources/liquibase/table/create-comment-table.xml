@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="2-base" author="test">
+
+        <preConditions>
+            <not>
+                <tableExists tableName="comments"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="comments">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="text" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_time" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="INT"/>
+            <column name="ad_id" type="INT"/>
+
+
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="FK_COMMENT_TO_USER_ID"
+                                 baseColumnNames="user_id"
+                                 baseTableName="comments"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint constraintName="FK_COMMENT_TO_AD_ID"
+                                 baseColumnNames="ad_id"
+                                 baseTableName="comments"
+                                 referencedColumnNames="id"
+                                 referencedTableName="ads"
+                                 onDelete="CASCADE"/>
+
+    </changeSet>
+</databaseChangeLog>
