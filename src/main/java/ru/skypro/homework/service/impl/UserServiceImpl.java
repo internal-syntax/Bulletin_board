@@ -21,6 +21,12 @@ import ru.skypro.homework.service.UserService;
 
 import java.io.IOException;
 
+/**
+ * Сервис для обработки пользовательских операций.
+ *
+ * @author КараваевАВ
+ * @version 1.0
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -31,6 +37,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final PasswordEncoder encoder;
     private final UserMapper userMapper;
 
+    /**
+     * Загрузка данных пользователя по имени пользователя.
+     *
+     * @param username Имя пользователя для загрузки сведений о пользователе.
+     * @return UserDetails указанного пользователя.
+     * @throws UsernameNotFoundException, обработка исключения если пользователь не найден.
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         ru.skypro.homework.model.User user = userRepository.findUserByLoginIgnoreCase(username)
@@ -43,6 +56,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userDetails;
     }
 
+    /**
+     * Получите информацию о пользователе на основе данных аутентификации.
+     *
+     * @param auth Детали аутентификации.
+     *             Объект @return UserDto DTO, содержащий информацию о пользователе.
+     * @throws UserNotFoundException, обработка исключения если пользователь не найден.
+     */
     @Override
     public UserDto getUser(Authentication auth) {
         log.debug("--- выполнение метода сервиса getUser");
@@ -51,6 +71,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userMapper.outDto(user);
     }
 
+    /**
+     * Обновление информации о пользователе.
+     *
+     * @param auth          Детали аутентификации.
+     * @param updateUserDto DTO с обновленной информацией о пользователе.
+     * @return Обновлен объект UpdateUserDto.
+     * @throws UserNotFoundException, обработка исключения если пользователь не найден.
+     */
     @Override
     public UpdateUserDto updateUser(Authentication auth, UpdateUserDto updateUserDto) {
         log.debug("--- выполнение метода сервиса updateUser");
@@ -61,6 +89,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return updateUserDto;
     }
 
+    /**
+     * Обновить пароль пользователя.
+     *
+     * @param auth     Детали аутентификации.
+     * @param password DTO с новыми и текущими паролями.
+     * @return True, если пароль обновлен, в противном случае — false.
+     */
     @Override
     public boolean updatePassword(Authentication auth, NewPasswordDto password) {
         log.debug("--- выполнение метода сервиса updatePassword");
@@ -74,6 +109,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return false;
     }
 
+    /**
+     * Обновление аватара пользователя.
+     *
+     * @param auth  Детали аутентификации.
+     * @param image Новые данные изображения аватара.
+     * @return True, если аватар обновлен, в противном случае — false.
+     * @throws IOException              при возникновении ошибки ввода-вывода.
+     * @throws UserNotFoundException,   обработка исключения если пользователь не найден.
+     * @throws AvatarNotFoundException, обработка исключения если аватар не найден.
+     */
     @Override
     public boolean updateAvatar(Authentication auth, MultipartFile image) throws IOException {
         log.debug("--- выполнение метода сервиса updateAvatar");
@@ -92,6 +137,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
+    /**
+     * Получить данные аватара по идентификатору аватара.
+     *
+     * @param avatarId Идентификатор аватара.
+     * @return Массив байтов, представляющий данные аватара.
+     * @throws AvatarNotFoundException, обработка исключения если аватар не найден.
+     */
     @Override
     public byte[] getAvatar(int avatarId) {
         log.info("--- выполнение метода сервиса getAvatar");

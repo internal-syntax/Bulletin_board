@@ -18,6 +18,12 @@ import java.util.UUID;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 
+/**
+ * Сервис для обработки изображений.
+ *
+ * @author КараваевАВ
+ * @version 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {

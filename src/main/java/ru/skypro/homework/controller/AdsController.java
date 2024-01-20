@@ -1,5 +1,9 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.*;
 import ru.skypro.homework.dto.*;
+import ru.skypro.homework.model.AdImage;
 import ru.skypro.homework.service.AdService;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
@@ -25,13 +29,53 @@ public class AdsController {
 
     private final AdService adService;
 
-    // Получение всех объявлений
+    @Operation(
+            summary = "Получение всех объявлений",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Все объявления получены",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdsDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Объявления не получены",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdsDto.class)
+                            )
+                    )
+            }
+    )
     @GetMapping
     public ResponseEntity<AdsDto> getAllAds() {
         return ResponseEntity.ok(adService.getAllAds());
     }
 
-    // Добавление объявления
+    @Operation(
+            summary = "Добавление объявления",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Объявление успешно создано",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Не удалось создать объявление",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdDto.class)
+                            )
+                    )
+            }
+    )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdDto> addAd(@RequestPart("properties") CreateOrUpdateAdDto crOrUpdAdDto,
                                        @RequestPart("image") MultipartFile image) throws IOException {
@@ -40,14 +84,54 @@ public class AdsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(adDto);
     }
 
-    // Метод для получения объявления по id
+    @Operation(
+            summary = "Получение объявления",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Объявление получено",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ExtendedAdDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Объявление не найдено",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ExtendedAdDto.class)
+                            )
+                    )
+            }
+    )
     @GetMapping(value = "/{id}")
     public ExtendedAdDto getAd(@PathVariable Integer id) {
         ExtendedAdDto extendedAdDto = adService.getAd(id);
         return extendedAdDto;
     }
 
-    // Метод для удаления объявления по id
+    @Operation(
+            summary = "Удаление объявления",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Объявление успешно удалено",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Не удалось удалить объявление",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdDto.class)
+                            )
+                    )
+            }
+    )
     @PreAuthorize("@validationImpl.validateAd(authentication,#id)")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteAd(@PathVariable Integer id) {
@@ -59,7 +143,27 @@ public class AdsController {
         }
     }
 
-    // Изменение объявления
+    @Operation(
+            summary = "Изменение объявления",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Объявление успешно обновлено",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Не удалось обновить объявление",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdDto.class)
+                            )
+                    )
+            }
+    )
     @PreAuthorize("@validationImpl.validateAd(authentication,#id)")
     @PatchMapping(value = "/{id}")
     public AdDto updateAd(@PathVariable Integer id,
@@ -69,7 +173,27 @@ public class AdsController {
         return adDto;
     }
 
-    // Получение объявлений авторизованного пользователя
+    @Operation(
+            summary = "Получить мои объявления",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Мои объявления получены",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdsDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Мои объявления не получены",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdsDto.class)
+                            )
+                    )
+            }
+    )
     @GetMapping(value = "/me")
     public ResponseEntity<AdsDto> getAdsMe() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -77,6 +201,27 @@ public class AdsController {
     }
 
     // Метод для изменения картинки объявления
+    @Operation(
+            summary = "Изменения картинки объявления",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Изображение объявления успешно обновлено",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Ошибка обновления изображения объявления",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdDto.class)
+                            )
+                    )
+            }
+    )
     @PreAuthorize("@validationImpl.validateAd(authentication,#id)")
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -96,6 +241,27 @@ public class AdsController {
         }
     }
 
+    @Operation(
+            summary = "Получить картинку объявления по id",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Изображение получено по id",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdImage.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Изображение не найдено по id",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = AdImage.class)
+                            )
+                    )
+            }
+    )
     @GetMapping("/{id}/image")
     public ResponseEntity<byte[]> getImageAd(@PathVariable("id") Integer idAd) {
         return ResponseEntity.ok().body(adService.getImageAd(idAd));

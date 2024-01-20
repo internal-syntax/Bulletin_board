@@ -12,7 +12,9 @@ import ru.skypro.homework.model.User;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.service.AuthService;
 
-
+/**
+ * Сервис аутентификации для входа в систему и регистрации.
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -21,8 +23,15 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
 
+    /**
+     * Попытка войти в систему пользователя с предоставленными учетными данными.
+     *
+     * @param userName Имя пользователя.
+     * @param password Пароль пользователя.
+     * @return True, если вход в систему успешен, в противном случае — false.
+     */
     @Override
-    public boolean login(String userName,String password) {
+    public boolean login(String userName, String password) {
         log.debug("--- service started login");
         if (!userRepository.existsByLoginIgnoreCase(userName)) {
             return false;
@@ -35,6 +44,12 @@ public class AuthServiceImpl implements AuthService {
         return false;
     }
 
+    /**
+     * Регистрация нового пользователя, используя регистрационные данные.
+     *
+     * @param register Регистрационные данные нового пользователя.
+     * @return True, если регистрация прошла успешно, и false, если имя пользователя уже существует.
+     */
     @Override
     public boolean register(Register register) {
         log.debug("--- service started register");
@@ -48,12 +63,18 @@ public class AuthServiceImpl implements AuthService {
             userRepository.save(newUser);
             log.debug("--- user registered: " + register.getUsername());
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("error during user registration: " + e.getMessage());
             return false;
         }
     }
 
+    /**
+     * Создает объект пользователя на основе регистрационных данных DTO.
+     *
+     * @param register Регистрационные данные нового пользователя.
+     * @return Объект User, представляющий нового пользователя.
+     */
     private User createUser(Register register) {
         User newUser = new User();
         newUser.setLogin(register.getUsername());

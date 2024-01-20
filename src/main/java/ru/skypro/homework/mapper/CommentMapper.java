@@ -1,7 +1,6 @@
 package ru.skypro.homework.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+
 import org.springframework.stereotype.Component;
 import ru.skypro.homework.dto.CommentDto;
 import ru.skypro.homework.dto.CommentsDto;
@@ -9,10 +8,8 @@ import ru.skypro.homework.dto.CreateOrUpdateCommentDto;
 import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.model.Comment;
 import ru.skypro.homework.model.User;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -4,6 +4,9 @@ import lombok.*;
 
 import javax.persistence.*;
 
+/**
+ * Сущность представляющая изображение для пользователя.
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
